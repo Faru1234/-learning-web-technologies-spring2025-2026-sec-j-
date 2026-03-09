@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculator</title>
+<style>
+
+    * {
+
+      box-sizing: border-box;
+
+    }
+
+    body {
+
+      margin: 0;
+
+      min-height: 100vh;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background: #000;
+
+      font-family: Arial, Helvetica, sans-serif;
+
+    }
+
+    .calculator {
+
+      width: min(92vw, 380px);
+
+      padding: 20px;
+
+    }
+
+    .display-wrapper {
+
+      min-height: 140px;
+
+      display: flex;
+
+      align-items: flex-end;
+
+      justify-content: flex-end;
+
+      padding: 16px 8px 24px;
+
+    }
+
+    .display {
+
+      width: 100%;
+
+      color: #fff;
+
+      font-size: clamp(48px, 10vw, 78px);
+
+      text-align: right;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      white-space: nowrap;
+
+    }
+
+    .buttons {
+
+      display: grid;
+
+      grid-template-columns: repeat(4, 1fr);
+
+      gap: 14px;
+
+    }
+
+    .btn {
+
+      border: none;
+
+      border-radius: 50%;
+
+      aspect-ratio: 1 / 1;
+
+      font-size: 1.9rem;
+
+      cursor: pointer;
+
+      transition: transform 0.12s ease, filter 0.12s ease;
+
+    }
+
+    .btn:active {
+
+      transform: scale(0.96);
+
+      filter: brightness(1.08);
+
+    }
+
+    .btn-number {
+
+      background: #1c1c1e;
+
+      color: #fff;
+
+    }
+
+    .btn-function {
+
+      background: #5c5c5f;
+
+      color: #fff;
+
+    }
+
+    .btn-operator {
+
+      background: #ff9f0a;
+
+      color: #fff;
+
+    }
+
+    @media (max-width: 420px) {
+
+      .calculator {
+
+        padding: 14px;
+
+      }
+
+      .buttons {
+
+        gap: 10px;
+
+      }
+
+      .btn {
+
+        font-size: 1.5rem;
+
+      }
+
+    }
+</style>
+</head>
+<body>
+<div class="calculator">
+<div class="display-wrapper">
+<div class="display" id="display">0</div>
+</div>
+<div class="buttons">
+<button class="btn btn-function" data-action="clear">AC</button>
+<button class="btn btn-function" data-action="sign">+/-</button>
+<button class="btn btn-function" data-action="percent">%</button>
+<button class="btn btn-operator" data-action="operator" data-value="divide">÷</button>
+<button class="btn btn-number" data-number="7">7</button>
+<button class="btn btn-number" data-number="8">8</button>
+<button class="btn btn-number" data-number="9">9</button>
+<button class="btn btn-operator" data-action="operator" data-value="multiply">×</button>
+<button class="btn btn-number" data-number="4">4</button>
+<button class="btn btn-number" data-number="5">5</button>
+<button class="btn btn-number" data-number="6">6</button>
+<button class="btn btn-operator" data-action="operator" data-value="subtract">−</button>
+<button class="btn btn-number" data-number="1">1</button>
+<button class="btn btn-number" data-number="2">2</button>
+<button class="btn btn-number" data-number="3">3</button>
+<button class="btn btn-operator" data-action="operator" data-value="add">+</button>
+<button class="btn btn-function" data-action="backspace">⌫</button>
+<button class="btn btn-number" data-number="0">0</button>
+<button class="btn btn-number" data-number=".">.</button>
+<button class="btn btn-operator" data-action="equals">=</button>
+</div>
+</div>
+<script>
+
+    const display = document.getElementById("display");
+
+    const buttons = document.querySelector(".buttons");
+
+    let currentValue = "0";
+
+    let firstOperand = null;
+
+    let operator = null;
+
+    let waitingForSecondOperand = false;
+
+    function updateDisplay() {
+
+      display.textContent = currentValue;
+
+    }
+
+    function inputNumber(number) {
+
+      if (waitingForSecondOperand) {
+
+        currentValue = number === "." ? "0." : number;
+
+        waitingForSecondOperand = false;
+
+        return;
+
+      }
+
+      if (number === ".") {
+
+        if (!currentValue.includes(".")) {
+
+          currentValue += ".";
+
+        }
+
+        return;
+
+      }
+
+      currentValue = currentValue === "0" ? number : currentValue + number;
+
+    }
+
+    function handleOperator(nextOperator) {
+
+      const inputValue = parseFloat(currentValue);
+
+      if (firstOperand === null) {
+
+        firstOperand = inputValue;
+
+      } else if (operator && !waitingForSecondOperand) {
+
+        const result = calculate(firstOperand, inputValue, operator);
+
+        currentValue = String(result);
+
+        firstOperand = result;
+
+      }
+
+      operator = nextOperator;
+
+      waitingForSecondOperand = true;
+
+    }
+
+    function calculate(first, second, currentOperator) {
+
+      if (currentOperator === "add") return first + second;
+
+      if (currentOperator === "subtract") return first - second;
+
+      if (currentOperator === "multiply") return first * second;
+
+      if (currentOperator === "divide") return second === 0 ? "Error" : first / second;
+
+      return second;
+
+    }
+
+    function resetCalculator() {
+
+      currentValue = "0";
+
+      firstOperand = null;
+
+      operator = null;
+
+      waitingForSecondOperand = false;
+
+    }
+
+    function toggleSign() {
+
+      if (currentValue === "0" || currentValue === "Error") return;
+
+      currentValue = String(parseFloat(currentValue) * -1);
+
+    }
+
+    function toPercent() {
+
+      if (currentValue === "Error") return;
+
+      currentValue = String(parseFloat(currentValue) / 100);
+
+    }
+
+    function backspace() {
+
+      if (waitingForSecondOperand) return;
+
+      if (currentValue === "Error") {
+
+        resetCalculator();
+
+        return;
+
+      }
+
+      currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : "0";
+
+      if (currentValue === "-" || currentValue === "") {
+
+        currentValue = "0";
+
+      }
+
+    }
+
+    function showResult() {
+
+      if (operator === null || waitingForSecondOperand) return;
+
+      const secondOperand = parseFloat(currentValue);
+
+      const result = calculate(firstOperand, secondOperand, operator);
+
+      currentValue = String(result);
+
+      firstOperand = result === "Error" ? null : result;
+
+      operator = null;
+
+      waitingForSecondOperand = true;
+
+    }
+
+    buttons.addEventListener("click", (event) => {
+
+      const button = event.target.closest("button");
+
+      if (!button) return;
+
+      if (button.dataset.number !== undefined) {
+
+        inputNumber(button.dataset.number);
+
+        updateDisplay();
+
+        return;
+
+      }
+
+      const action = button.dataset.action;
+
+      if (action === "clear") resetCalculator();
+
+      if (action === "sign") toggleSign();
+
+      if (action === "percent") toPercent();
+
+      if (action === "backspace") backspace();
+
+      if (action === "operator") handleOperator(button.dataset.value);
+
+      if (action === "equals") showResult();
+
+      updateDisplay();
+
+    });
+
+    updateDisplay();
+</script>
+</body>
+</html>
+ 
