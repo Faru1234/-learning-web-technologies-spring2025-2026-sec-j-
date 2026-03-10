@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tic Tac Toe</title>
+<style>
+
+body{
+
+    text-align:center;
+
+    font-family: Arial;
+
+    background: rgb(240,240,240);
+
+}
+
+.board{
+
+    width:270px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:90px 90px 90px;
+
+}
+
+.cell{
+
+    width:90px;
+
+    height:90px;
+
+    border:2px solid rgb(0,0,0);
+
+    font-size:40px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    background: rgb(255,255,255);
+
+}
+
+.win{
+
+    background: rgb(120,255,120);
+
+}
+
+button{
+
+    margin-top:20px;
+
+    padding:10px 20px;
+
+    background: rgb(100,150,255);
+
+    border:none;
+
+    color:white;
+
+}
+</style>
+</head>
+<body>
+<h2>Tic Tac Toe</h2>
+<p id="status">Player X Turn</p>
+<div class="board">
+<div class="cell" onclick="play(this,0)"></div>
+<div class="cell" onclick="play(this,1)"></div>
+<div class="cell" onclick="play(this,2)"></div>
+<div class="cell" onclick="play(this,3)"></div>
+<div class="cell" onclick="play(this,4)"></div>
+<div class="cell" onclick="play(this,5)"></div>
+<div class="cell" onclick="play(this,6)"></div>
+<div class="cell" onclick="play(this,7)"></div>
+<div class="cell" onclick="play(this,8)"></div>
+</div>
+<br>
+<button onclick="resetGame()">Reset</button>
+<script>
+
+let player="X"
+
+let board=["","","","","","","","",""]
+
+let gameOver=false
+
+function play(cell,index){
+
+if(cell.innerHTML!="" || gameOver){
+
+return
+
+}
+
+cell.innerHTML=player
+
+board[index]=player
+
+checkWinner()
+
+if(!gameOver){
+
+if(player=="X"){
+
+player="O"
+
+}else{
+
+player="X"
+
+}
+
+document.getElementById("status").innerHTML="Player "+player+" Turn"
+
+}
+
+}
+
+function checkWinner(){
+
+let c=document.getElementsByClassName("cell")
+
+if(board[0]==player && board[1]==player && board[2]==player){
+
+win(c[0],c[1],c[2])
+
+}
+
+else if(board[3]==player && board[4]==player && board[5]==player){
+
+win(c[3],c[4],c[5])
+
+}
+
+else if(board[6]==player && board[7]==player && board[8]==player){
+
+win(c[6],c[7],c[8])
+
+}
+
+else if(board[0]==player && board[3]==player && board[6]==player){
+
+win(c[0],c[3],c[6])
+
+}
+
+else if(board[1]==player && board[4]==player && board[7]==player){
+
+win(c[1],c[4],c[7])
+
+}
+
+else if(board[2]==player && board[5]==player && board[8]==player){
+
+win(c[2],c[5],c[8])
+
+}
+
+else if(board[0]==player && board[4]==player && board[8]==player){
+
+win(c[0],c[4],c[8])
+
+}
+
+else if(board[2]==player && board[4]==player && board[6]==player){
+
+win(c[2],c[4],c[6])
+
+}
+
+}
+
+function win(a,b,c){
+
+a.classList.add("win")
+
+b.classList.add("win")
+
+c.classList.add("win")
+
+document.getElementById("status").innerHTML="Player "+player+" Wins!"
+
+gameOver=true
+
+}
+
+function resetGame(){
+
+let cells=document.getElementsByClassName("cell")
+
+for(let i=0;i<cells.length;i++){
+
+cells[i].innerHTML=""
+
+cells[i].classList.remove("win")
+
+}
+
+board=["","","","","","","","",""]
+
+player="X"
+
+gameOver=false
+
+document.getElementById("status").innerHTML="Player X Turn"
+
+}
+</script>
+</body>
+</html>
+ 
